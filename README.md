@@ -1,5 +1,9 @@
 # Hadean Vision
 
+
+[![Python package CI](https://github.com/hasesuns/hadean-vision-api/actions/workflows/python-package-ci.yml/badge.svg)](https://github.com//hasesuns/hadean-vision-api/actions/workflows/python-package-ci.yml)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 ![beach_hadean.png](./data/sample/beach_hadean.png)
 
 A recreation the image processing of the third part of the "Stargate Sequence" (from ["2001: A Space Odyssey"](https://en.wikipedia.org/wiki/2001:_A_Space_Odyssey_(film)) ).
