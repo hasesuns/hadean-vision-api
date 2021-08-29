@@ -8,6 +8,11 @@ import numpy as np
 logger = getLogger(__name__)
 
 
+def _clamp(val: float) -> float:
+    """val 0~255の範囲に収まる数値に丸める"""
+    return min(255, max(val, 0))
+
+
 @dataclass(frozen=True)
 class ConvertParams:
     num_colors: int = 1
@@ -31,13 +36,15 @@ class ConvertParams:
 
         if self.num_colors < len(color_list):
             logger.warning(
-                f"num_colorsよりもcolor listの要素数が多いため、後方のcolor listの値は無視されます。（num_colors: {self.num_colors}, len(color list): {len(color_list)}）"
+                f"num_colorsよりもcolor listの要素数が多いため、後方のcolor listの値は無視されます。\
+                    （num_colors: {self.num_colors}, len(color list): {len(color_list)}）"
             )
             color_list = color_list[: self.num_colors]
 
         if self.num_colors > len(color_list):
             logger.warning(
-                f"num_colorsよりもcolor listの要素数が少ないため、color listにcyan（R:0, G:255, B:255）を不足分だけ追加します。（num_colors: {self.num_colors}, len(color list): {len(color_list)}）"
+                f"num_colorsよりもcolor listの要素数が少ないため、color listにcyan（R:0, G:255, B:255）を不足分だけ追加します。\
+                    （num_colors: {self.num_colors}, len(color list): {len(color_list)}）"
             )
             if use_bgr_input:
                 cyan = (255, 255, 0)
@@ -45,8 +52,6 @@ class ConvertParams:
                 cyan = (0, 255, 255)
             color_list += [cyan for _ in range(self.num_colors - len(color_list))]
 
-        # 0~255の範囲に収まる整数に丸める
-        clamp = lambda x: min(255, max(x, 0))
         rgb_list: List[Tuple(float, float, float)] = []
         bgr_list: List[Tuple(float, float, float)] = []
         for i, color in enumerate(color_list):
@@ -54,8 +59,8 @@ class ConvertParams:
                 b, g, r = color
             else:
                 r, g, b = color
-            rgb_list.append((clamp(int(r)), clamp(int(g)), clamp(int(b))))
-            bgr_list.append((clamp(int(b)), clamp(int(g)), clamp(int(r))))
+            rgb_list.append((_clamp(int(r)), _clamp(int(g)), _clamp(int(b))))
+            bgr_list.append((_clamp(int(b)), _clamp(int(g)), _clamp(int(r))))
 
         object.__setattr__(self, "rgb_list", rgb_list)
         object.__setattr__(self, "bgr_list", bgr_list)
