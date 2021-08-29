@@ -79,8 +79,8 @@ def convert(input_img: np.ndarray, convert_params: ConvertParams) -> np.ndarray:
 
     # TODO: 元画像の輝度を出力に反映させる
 
-    convert_clors_list = np.uint8(convert_params.bgr_list)
-    product = convert_clors_list[label.flatten()]
+    color_look_up_table = np.array(convert_params.bgr_list, np.uint8)
+    product = color_look_up_table[label.flatten()]
     output_img = product.reshape((input_img.shape))
 
     return output_img
