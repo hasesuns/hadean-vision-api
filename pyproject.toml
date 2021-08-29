@@ -7,7 +7,7 @@ repository = "https://github.com/hasesuns/python-project-template"
 
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.7.10,<3.10"
 opencv-python = "^4.5.3"
 python-dotenv = "^0.19.0"
 
