@@ -21,6 +21,9 @@ class ConvertParams:
 
     def __post_init__(self):
 
+        color_list: List[Tuple(float, float, float)] = []
+        use_bgr_input: bool = False
+
         if len(self.bgr_list) > 0:
             color_list = self.bgr_list
             use_bgr_input = True  # bgr_listの入力を用いるかrgb_listの入力を用いるかを保持するflag
@@ -28,8 +31,8 @@ class ConvertParams:
             color_list = self.rgb_list
             use_bgr_input = False
         else:
-            use_bgr_input = False
             color_list = []
+            use_bgr_input = False
 
         if self.num_colors < 1:
             object.__setattr__(self, "num_colors", 1)
