@@ -36,6 +36,3 @@ wheels/
 
 # test result data
 data/tests/output/*
-
-# mypy
-.mypy_cache
