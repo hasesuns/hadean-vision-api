@@ -1,6 +1,9 @@
+import os
 from dataclasses import dataclass, field
 from logging import getLogger
 from typing import List, Tuple
+
+from dotenv import load_dotenv
 
 from hadeanvision.convert_picture import ConvertParams, convert
 
@@ -72,11 +75,14 @@ def test_convert(query, caplog):
 
     input_img = cv2.imread("data/tests/input/beach.jpg")
     output_img = convert(input_img=input_img, convert_params=query.corrected_params)
-    output_img_path = "data/tests/output/beach_hadean.png"
-    cv2.imwrite(output_img_path, output_img)
-    saved_output_png = cv2.imread(output_img_path)
 
-    output_color_list = np.unique(saved_output_png.reshape((-1, 3)), axis=0)
+    load_dotenv()
+    if os.environ.get("ENVIRONMENT") == "local":
+        output_img_path = "data/tests/output/beach_hadean.png"
+        cv2.imwrite(output_img_path, output_img)
+        output_img = cv2.imread(output_img_path)
+
+    output_color_list = np.unique(output_img.reshape((-1, 3)), axis=0)
     assert len(output_color_list) == query.corrected_params.num_colors  # 元の写真を構成する色数がquery.num_colorsより少ないと成立しないので注意
 
     output_color_set = set([tuple(bgr) for bgr in output_color_list])
