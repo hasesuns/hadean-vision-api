@@ -1,6 +1,5 @@
 from dataclasses import dataclass, field
 from logging import getLogger
-from pathlib import Path
 from typing import List, Tuple
 
 import cv2
@@ -13,7 +12,7 @@ logger = getLogger(__name__)
 class ConvertParams:
     num_colors: int = 1
     rgb_list: List[Tuple[float, float, float]] = field(default_factory=list)
-    bgr_list: List[Tuple[float, float, float]] = field(default_factory=list) 
+    bgr_list: List[Tuple[float, float, float]] = field(default_factory=list)
 
     def __post_init__(self):
 
@@ -30,12 +29,11 @@ class ConvertParams:
         if self.num_colors < 1:
             object.__setattr__(self, "num_colors", 1)
 
-
         if self.num_colors < len(color_list):
             logger.warning(
                 f"num_colorsよりもcolor listの要素数が多いため、後方のcolor listの値は無視されます。（num_colors: {self.num_colors}, len(color list): {len(color_list)}）"
             )
-            color_list = color_list[:self.num_colors]
+            color_list = color_list[: self.num_colors]
 
         if self.num_colors > len(color_list):
             logger.warning(
@@ -44,13 +42,13 @@ class ConvertParams:
             if use_bgr_input:
                 cyan = (255, 255, 0)
             else:
-                cyan = (0, 255, 255) 
+                cyan = (0, 255, 255)
             color_list += [cyan for _ in range(self.num_colors - len(color_list))]
 
         # 0~255の範囲に収まる整数に丸める
         clamp = lambda x: min(255, max(x, 0))
-        rgb_list :List[Tuple(float, float, float)] = []
-        bgr_list :List[Tuple(float, float, float)] = []
+        rgb_list: List[Tuple(float, float, float)] = []
+        bgr_list: List[Tuple(float, float, float)] = []
         for i, color in enumerate(color_list):
             if use_bgr_input:
                 b, g, r = color
@@ -61,7 +59,6 @@ class ConvertParams:
 
         object.__setattr__(self, "rgb_list", rgb_list)
         object.__setattr__(self, "bgr_list", bgr_list)
-
 
 
 def convert(input_img: np.ndarray, convert_params: ConvertParams) -> np.ndarray:
@@ -78,15 +75,12 @@ def convert(input_img: np.ndarray, convert_params: ConvertParams) -> np.ndarray:
     samples = np.float32(input_img.reshape((-1, 3)))
     n_cluster = convert_params.num_colors
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-    ret, label, center = cv2.kmeans(samples,  n_cluster, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+    ret, label, center = cv2.kmeans(samples, n_cluster, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
 
-    # TODO: 元画像の輝度を出力に反映させる 
+    # TODO: 元画像の輝度を出力に反映させる
 
     convert_clors_list = np.uint8(convert_params.bgr_list)
     product = convert_clors_list[label.flatten()]
     output_img = product.reshape((input_img.shape))
 
     return output_img
-
-
-

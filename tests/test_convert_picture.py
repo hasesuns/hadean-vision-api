@@ -76,10 +76,9 @@ def test_convert(query, caplog):
     output_img_path = "data/tests/output/beach_hadean.png"
     cv2.imwrite(output_img_path, output_img)
     saved_output_png = cv2.imread(output_img_path)
-    
+
     output_color_list = np.unique(saved_output_png.reshape((-1, 3)), axis=0)
     assert len(output_color_list) == query.ans.num_colors  # 元の写真を構成する色数がquery.num_colorsより少ないと成立しないので注意
 
     output_color_set = set([tuple(bgr) for bgr in output_color_list])
     assert output_color_set == set(query.ans.bgr_list)
-    
