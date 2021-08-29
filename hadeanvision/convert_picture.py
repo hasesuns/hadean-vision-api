@@ -15,12 +15,14 @@ def _clamp(val: float) -> float:
 
 @dataclass(frozen=True)
 class ConvertParams:
-    num_colors: int = 1
+    num_colors: int = 0
     rgb_list: List[Tuple[float, float, float]] = field(default_factory=list)
     bgr_list: List[Tuple[float, float, float]] = field(default_factory=list)
 
     def __post_init__(self):
 
+        DEFAULT_COLORS = [(0, 255, 255), (10, 50, 80), (170, 80, 10), (50, 0, 5), (0, 10, 40)]
+        num_colors = self.num_colors
         color_list: List[Tuple(float, float, float)] = []
         use_bgr_input: bool = False
 
@@ -31,11 +33,13 @@ class ConvertParams:
             color_list = self.rgb_list
             use_bgr_input = False
         else:
-            color_list = []
+            if num_colors < 1:  # num_colorsが非正数をとるのはおかしいのでdefault値として5を代入する
+                num_colors = 5
+            color_list = DEFAULT_COLORS
             use_bgr_input = False
 
-        if self.num_colors < 1:
-            object.__setattr__(self, "num_colors", 1)
+        if self.num_colors != num_colors:
+            object.__setattr__(self, "num_colors", num_colors)
 
         if self.num_colors < len(color_list):
             logger.warning(
@@ -50,10 +54,10 @@ class ConvertParams:
                     （num_colors: {self.num_colors}, len(color list): {len(color_list)}）"
             )
             if use_bgr_input:
-                cyan = (255, 255, 0)
+                CYAN = (255, 255, 0)
             else:
-                cyan = (0, 255, 255)
-            color_list += [cyan for _ in range(self.num_colors - len(color_list))]
+                CYAN = (0, 255, 255)
+            color_list += [CYAN for _ in range(self.num_colors - len(color_list))]
 
         rgb_list: List[Tuple(float, float, float)] = []
         bgr_list: List[Tuple(float, float, float)] = []
@@ -69,7 +73,7 @@ class ConvertParams:
         object.__setattr__(self, "bgr_list", bgr_list)
 
 
-def convert(input_img: np.ndarray, convert_params: ConvertParams) -> np.ndarray:
+def convert(input_img: np.ndarray, convert_params: ConvertParams = ConvertParams()) -> np.ndarray:
     """input_imgをconvert_paramsに基づいてkmeansなどによりスタイル変換する
 
     Args:

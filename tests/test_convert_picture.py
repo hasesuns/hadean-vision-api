@@ -49,13 +49,22 @@ param_queries = (
         corrected_params=ConvertParams(num_colors=3, bgr_list=[(0, 0, 255), (0, 255, 0), (255, 0, 0)]),
     ),
     ConvertParamsTestCase(
-        desc="num_colorsの値が0",
+        desc="num_colorsの値が0になっていたケース",
         num_colors=0,
         rgb_list=[],
-        corrected_params=ConvertParams(num_colors=1, bgr_list=[(255, 255, 0)]),
+        corrected_params=ConvertParams(
+            num_colors=5, bgr_list=[(255, 255, 0), (80, 50, 10), (10, 80, 170), (5, 0, 50), (40, 10, 0)]
+        ),
+    ),
+    ConvertParamsTestCase(
+        desc="ConvertParamsでパラメータを指定しなかったケース",
+        num_colors=ConvertParams().num_colors,
+        rgb_list=ConvertParams().rgb_list,
+        corrected_params=ConvertParams(
+            num_colors=5, bgr_list=[(255, 255, 0), (80, 50, 10), (10, 80, 170), (5, 0, 50), (40, 10, 0)]
+        ),
     ),
 )
-
 
 id_param_queries = [query.desc for query in param_queries]
 
