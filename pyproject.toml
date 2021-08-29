@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "hadeanvision"
-version = "0.1.0"
+version = "0.2.0"
 description = ""
 authors = ["Akiyuki Hasegawa"]
 repository = "https://github.com/hasesuns/python-project-template"
@@ -8,6 +8,7 @@ repository = "https://github.com/hasesuns/python-project-template"
 
 [tool.poetry.dependencies]
 python = "^3.9"
+opencv-python = "^4.5.3"
 
 
 [tool.poetry.dev-dependencies]
