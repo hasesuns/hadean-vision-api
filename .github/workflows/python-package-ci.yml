@@ -59,9 +59,9 @@ jobs:
         git commit -m "Format Python code with pycqa/isort push"
         git push --force origin HEAD:$GITHUB_REF
 
-    - name: Check with mypy
-      run: |
-        mypy --ignore-missing-imports $APP_PATH
+    # - name: Check with mypy
+    #   run: |
+    #     mypy --ignore-missing-imports $APP_PATH
 
     - name: Lint with flake8
       run: |
