@@ -61,7 +61,7 @@ jobs:
 
     - name: Check with mypy
       run: |
-        mypy --ignore-missing-imports --cache-dir=.github/workflows/.mypy_cache $APP_PATH
+        mypy --ignore-missing-imports $APP_PATH
 
     - name: Lint with flake8
       run: |
