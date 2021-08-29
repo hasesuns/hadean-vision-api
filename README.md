@@ -1,4 +1,6 @@
-# hadeanvision
+# Hadean Vision
+
+![beach_hadean.png](./data/sample/beach_hadean.png)
 
 A recreation the image processing of the third part of the "Stargate Sequence" (from ["2001: A Space Odyssey"](https://en.wikipedia.org/wiki/2001:_A_Space_Odyssey_(film)) ).
 
