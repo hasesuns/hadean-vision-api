@@ -1,6 +1,6 @@
 from pathlib import Path
 
-# testsに関わる推定結果を事前に削除
+# Remove estimation results related to tests in advance.
 data_dir_path = Path(__file__).parent.parent.resolve() / "data/tests"
 test_result_data_path = data_dir_path / "output"
 
