@@ -8,7 +8,7 @@ import numpy as np
 import pytest
 from dotenv import load_dotenv
 
-from hadeanvision.convert_picture import ConvertParams, convert
+from hadeanvision.convert_picture import ConvertParams, clustering, coloring, convert
 
 logger = getLogger(__name__)
 
@@ -79,8 +79,43 @@ def test_init_convert_params(query, caplog):
 
 @pytest.mark.github_actions
 @pytest.mark.parametrize("query", param_queries, ids=id_param_queries)
+def test_clustering(query, caplog):
+    """cluster number should be equal to query.num_color"""
+    input_img = cv2.imread("data/tests/input/beach.jpg")
+    if query.num_colors > 0:
+        label = clustering(input_img=input_img, n_cluster=query.num_colors)
+        num_unique_label = len(np.unique(label))
+        assert num_unique_label == query.num_colors
+
+
+@pytest.mark.github_actions
+def test_clustering_raise_error(caplog):
+    """If n_cluster is 0, ValueErroe shoud be raised."""
+    input_img = cv2.imread("data/tests/input/beach.jpg")
+    with pytest.raises(ValueError):
+        clustering(input_img=input_img, n_cluster=0)
+
+
+@pytest.mark.github_actions
+@pytest.mark.parametrize("query", param_queries, ids=id_param_queries)
+def test_coloring(query, caplog):
+    """coloring() output colors should be bgr_list colors."""
+    img_w = img_h = query.corrected_params.num_colors
+    label = np.array([[x for x in range(img_w)] for _ in range(img_h)])
+    img_shape = (img_h, img_w, 3)
+    output_img = coloring(label=label, img_shape=img_shape, convert_params=query.corrected_params)
+    output_color_list = np.unique(output_img.reshape((-1, 3)), axis=0)
+    # Note: This will not work if the number of colors in the original photo is less than query.num_colors.
+    assert len(output_color_list) == query.corrected_params.num_colors
+
+    output_color_set = set([tuple(bgr) for bgr in output_color_list])
+    assert output_color_set == set(query.corrected_params.bgr_list)
+
+
+@pytest.mark.github_actions
+@pytest.mark.parametrize("query", param_queries, ids=id_param_queries)
 def test_convert(query, caplog):
-    """convert() output should be hadean colored image."""
+    """convert() output colors should be bgr_list colors."""
 
     input_img = cv2.imread("data/tests/input/beach.jpg")
     output_img = convert(input_img=input_img, convert_params=query.corrected_params)
@@ -93,7 +128,7 @@ def test_convert(query, caplog):
 
     output_color_list = np.unique(output_img.reshape((-1, 3)), axis=0)
     # Note: This will not work if the number of colors in the original photo is less than query.num_colors.
-    assert len(output_color_list) == query.corrected_params.num_colors  
+    assert len(output_color_list) == query.corrected_params.num_colors
 
     output_color_set = set([tuple(bgr) for bgr in output_color_list])
     assert output_color_set == set(query.corrected_params.bgr_list)
