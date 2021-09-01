@@ -97,9 +97,7 @@ def clustering(input_img: np.ndarray, n_cluster: int) -> np.ndarray:
     return label
 
 
-def coloring(
-    label: np.ndarray, img_shape: Tuple[int, int, int], convert_params: ConvertParams = ConvertParams()
-) -> np.ndarray:
+def coloring(label: np.ndarray, img_shape: Tuple[int, ...], convert_params: ConvertParams = ConvertParams()) -> np.ndarray:
     """Coloring k-means output
 
     Args:
