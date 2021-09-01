@@ -73,7 +73,22 @@ class ConvertParams:
         object.__setattr__(self, "bgr_list", bgr_list)
 
 
-def clustering(input_img: np.ndarray, n_cluster) -> np.ndarray:
+def clustering(input_img: np.ndarray, n_cluster: int) -> np.ndarray:
+    """clustering color image pixels using k-means.
+
+    Args:
+        input_img (np.ndarray): input color image
+        n_cluster (int): number of cluster
+
+    Raises:
+        ValueError: [description]
+
+    Returns:
+        np.ndarray: cluster label
+    """
+    if n_cluster < 1:
+        logger.error("n_cluster should be positive number")
+        raise ValueError
 
     samples = np.float32(input_img.reshape((-1, 3)))
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
@@ -82,7 +97,19 @@ def clustering(input_img: np.ndarray, n_cluster) -> np.ndarray:
     return label
 
 
-def coloring(label: np.ndarray, img_shape: Tuple[int, int, int], convert_params: ConvertParams = ConvertParams()) -> np.ndarray:
+def coloring(
+    label: np.ndarray, img_shape: Tuple[int, int, int], convert_params: ConvertParams = ConvertParams()
+) -> np.ndarray:
+    """Coloring k-means output
+
+    Args:
+        label (np.ndarray): cluster label
+        img_shape (Tuple[int, int, int]): image shape
+        convert_params (ConvertParams, optional): Convert parameters. Defaults to ConvertParams().
+
+    Returns:
+        np.ndarray: [description]
+    """
     color_look_up_table = np.array(convert_params.bgr_list, np.uint8)
     product = color_look_up_table[label.flatten()]
     colored_img = product.reshape((img_shape))
@@ -93,11 +120,11 @@ def convert(input_img: np.ndarray, convert_params: ConvertParams = ConvertParams
     """Converts the image based on the parameters. Internally, the k-means method and other methods are used.
 
     Args:
-        input_img (np.ndarray): [description]
-        convert_params (ConvertParams): [description]
+        input_img (np.ndarray): input color image.
+        convert_params (ConvertParams): Convert parameters. Defaults to ConvertParams().
 
     Returns:
-        np.ndarray: [description]
+        np.ndarray: converted color image.
     """
     label = clustering(input_img, convert_params.num_colors)
     output_img = coloring(label, input_img.shape, convert_params)
