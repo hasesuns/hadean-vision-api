@@ -18,6 +18,7 @@ class ConvertParams:
     num_colors: int = 0
     rgb_list: List[Tuple[float, float, float]] = field(default_factory=list)
     bgr_list: List[Tuple[float, float, float]] = field(default_factory=list)
+    is_random: bool = True
 
     def __post_init__(self):
 
@@ -73,12 +74,13 @@ class ConvertParams:
         object.__setattr__(self, "bgr_list", bgr_list)
 
 
-def clustering(input_img: np.ndarray, n_cluster: int) -> np.ndarray:
+def clustering(input_img: np.ndarray, n_cluster: int, is_random: bool = True) -> np.ndarray:
     """clustering color image pixels using k-means.
 
     Args:
         input_img (np.ndarray): input color image
         n_cluster (int): number of cluster
+        is_random (bool): use random
 
     Raises:
         ValueError: [description]
@@ -92,7 +94,11 @@ def clustering(input_img: np.ndarray, n_cluster: int) -> np.ndarray:
 
     samples = np.float32(input_img.reshape((-1, 3)))
     criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 10, 1.0)
-    ret, label, center = cv2.kmeans(samples, n_cluster, None, criteria, 10, cv2.KMEANS_RANDOM_CENTERS)
+    if is_random:
+        kmeans_flag = cv2.KMEANS_RANDOM_CENTERS
+    else:
+        kmeans_flag = cv2.KMEANS_PP_CENTERS
+    ret, label, center = cv2.kmeans(samples, n_cluster, None, criteria, 10, kmeans_flag)
 
     return label
 
@@ -124,7 +130,7 @@ def convert(input_img: np.ndarray, convert_params: ConvertParams = ConvertParams
     Returns:
         np.ndarray: converted color image.
     """
-    label = clustering(input_img, convert_params.num_colors)
+    label = clustering(input_img, convert_params.num_colors, convert_params.is_random)
     output_img = coloring(label, input_img.shape, convert_params)
     # TODO: 元画像の輝度を出力に反映させる
 
